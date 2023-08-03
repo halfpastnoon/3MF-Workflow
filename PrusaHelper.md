@@ -32,7 +32,7 @@ To define a new material with specific properties, follow these steps:
  9. Add these scripts to the PATH variable in your distribution and these scripts can be called anywhere in the filesystem, with syntax like `mat-assign [arguments]` or `prusa-helper [arguments]`.
  
 ### Custom PrusaSlicer Installation 
-1. Download PrusaSlicer v2.6.0 from their 'Releases' page on GitHub
+1. Download and Install PrusaSlicer v2.6.0 from their [Releases](https://github.com/prusa3d/PrusaSlicer/releases) page on GitHub
 2. Download updated .exe and .dll file from `PrusaSlicer/Binaries(Windows)` directory on GitHub.
 3. Locate PrusaSlicer installation folder (usually `C:\Program Files\Prusa3D\PrusaSlicer`).
 4. Replace `prusa-slicer-console.exe` and `PrusaSlicer.dll` with the provided files with matching extensions from GitHub.
