@@ -1,8 +1,12 @@
 # 3MF-Workflow
+Welcome! This repository stores the scripts and files necessary to build a 3MF package with mechanical response properties of included materials and manufacture models defined in said 3MF package using PrusaSlicer.
 
 To get started, follow one of the following guides:
-- [mat-assign installation](MatAssign.md)
-- [prusa-helper installation](PrusaHelper.md)
+- [mat-assign guide](MatAssign.md)
+- [prusa-helper guide](PrusaHelper.md)
+
+### Supported Operating Systems
+- Windows
 
 ### Dependencies
 - [Lib3mf](https://github.com/3MFConsortium/lib3mf/tree/master)
