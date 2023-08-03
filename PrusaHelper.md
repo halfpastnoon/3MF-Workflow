@@ -21,9 +21,9 @@ To define a new material with specific properties, follow these steps:
 4. Example filament profile INI files with appropriate material definitions are provided in the `Examples/` directory. Material properties can be found under the `filament_notes` section of the INI file.
 ## Installation
 ### 3MF_Scripts Installation
- 1. Install Windows Subsystem for Linux on your system, preferably Ubuntu but any Linux distro should work.
- 2. Download `3MF_Scripts.zip` from the GitHub and extract to a folder. (If using VS Code, stop here and open new folder using VS Code with C-Make extensions)
- 3. Set the current working directory (cwd) of the shell to the `Source` folder inside the newly extracted folder.
+ 1. Install Windows Subsystem for Linux (WSL) on your system, preferably Ubuntu but any Linux distro should work.
+ 2. Download `3MF_Scripts.zip` from the GitHub and extract to a folder accessible in WSL. (If using VS Code, stop here and open new folder using VS Code with C-Make extensions)
+ 3. Set the current working directory (cwd) of the WSL shell to the `Source` folder inside the newly extracted folder.
  4. Run: `chmod +x GenerateMake.sh`
  5. Run: `./GenerateMake.sh`
  6. Set the cwd of the shell to the newly created `build` folder inside the `Source` folder.
@@ -33,7 +33,10 @@ To define a new material with specific properties, follow these steps:
  
 ### Custom PrusaSlicer Installation 
 1. Download PrusaSlicer v2.6.0 from their 'Releases' page on GitHub
-2. Download updated .exe and .dll file from PrusaSlicer_Mat Directory on GitHub.
+2. Download updated .exe and .dll file from `PrusaSlicer/Binaries(Windows)` directory on GitHub.
 3. Locate PrusaSlicer installation folder (usually `C:\Program Files\Prusa3D\PrusaSlicer`).
 4. Replace `prusa-slicer-console.exe` and `PrusaSlicer.dll` with the provided files with matching extensions from GitHub.
-5. For more information regarding how to build and modify the PrusaSlicer source code, visit [the PrusaSlicer Windows build instructions page](https://github.com/prusa3d/PrusaSlicer/blob/master/doc/How%20to%20build%20-%20Windows.md).
+5. For more information regarding how to build and modify the PrusaSlicer source code, visit [the PrusaSlicer Windows build instructions page](https://github.com/prusa3d/PrusaSlicer/blob/master/doc/How%20to%20build%20-%20Windows.md). Source code including modified files can be found in the `PrusaSlicer/src` directory on GitHub. This directory can freely replace the one provided by PrusaSlicer named `src` during the build process.
+
+### Modified PrusaSlicer Source Files
+- `PrusaSlicer/src/libslic3r/Model.cpp`
