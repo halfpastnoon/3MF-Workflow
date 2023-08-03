@@ -23,7 +23,7 @@ To define a new material with specific properties, follow these steps:
 ## Installation
 ### 3MF_Scripts Installation
  1. Install Windows Subsystem for Linux (WSL) on your system, preferably Ubuntu but any Linux distro should work.
- 2. Download `3MF_Scripts.zip` from the GitHub and extract to a folder within WSL (e.g. /home/PrusaBuild NOT /mnt/c/...). 
+ 2. Download `3MF_Scripts.zip` from the GitHub and extract to a folder within WSL (e.g. `/home/PrusaBuild` NOT `/mnt/c/...`). 
  >If using VS Code, stop here and open new folder using VS Code with C-Make extensions
  3. Set the current working directory (cwd) of the WSL shell to the `Source` folder inside the newly extracted folder.
  4. Run: `chmod +x GenerateMake.sh`
