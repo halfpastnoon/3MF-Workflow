@@ -20,7 +20,7 @@ To define a new material with specific properties, follow these steps:
 	
 3. Save the filament profile as a custom profile with a custom name (click the save icon near the profile name near the top of the window). You can verify this worked by checking the 'filament' folder for an INI file with the custom name provided to PrusaSlicer. The 'filament' folder can be found in the folder pointed to by the `[PrusaSlicer Path]` parameter.
 4. Example filament profile INI files with appropriate material definitions are provided in the `Examples/` directory. Material properties can be found under the `filament_notes` section of the INI file.
-## Installation
+## Advanced
 ### 3MF_Scripts Installation
  1. Install Windows Subsystem for Linux (WSL) on your system, preferably Ubuntu but any Linux distro should work.
  2. Download `3MF_Scripts.zip` from the GitHub and extract to a folder within WSL (e.g. `/home/PrusaBuild` NOT `/mnt/c/...`). 

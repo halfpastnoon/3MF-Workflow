@@ -17,7 +17,7 @@ This is a special excel spreadsheet named `matmap.xlsx` and is located in the fo
 2. Material Density
 3. Young's Modulus
 
-## Installation
+## Advanced
 
 ### 3MF_Scripts Installation
  1. Install Windows Subsystem for Linux (WSL) on your system, preferably Ubuntu but any Linux distro should work.
