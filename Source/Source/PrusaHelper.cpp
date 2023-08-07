@@ -72,15 +72,6 @@ bool dcomp(double x, double y, double err = 0.0001f){
 	return fabs(x - y) < err ? true : false;
 }
 
-sColor randColor(){
-	sColor ret;
-	ret.m_Alpha = 255;
-	ret.m_Red = rand() % 256;
-	ret.m_Blue = rand() % 256;
-	ret.m_Green = rand() % 256;
-	return ret;
-}
-
 std::string get_dir(std::string path){
 	return path.substr(0, path.rfind("/")+1);
 }
@@ -99,34 +90,10 @@ void printVersion(PWrapper wrapper) {
 	std::cout << std::endl;
 }
 
-std::string extractMatName(std::string filename){
-	std::string::size_type idx;
-	idx = filename.find('_');
-
-	if(idx != std::string::npos){
-		std::string nam = filename.substr(idx+1);
-		for(int i=0;i<4;i++) nam.pop_back();
-		return nam;
-	}
-	else return "";
-}
-
-std::string FindExtension(std::string filename) {
-	// this emulates Windows' PathFindExtension
-	std::string::size_type idx;
-	idx = filename.rfind('.');
-
-	if (idx != std::string::npos)
-	{	
-		return filename.substr(idx);
-	}
-	else
-	{
-		return "";
-	}
-}
-
-//TODO: if cant open file, error out
+//extracts print ticket data from 3MF package
+//returns list of material names in order of appearance in .model file
+//parameter pticket: print ticket json extracted from 3MF package
+//parameter filename: absolute WSL path to input 3MF package 
 std::vector<std::string> parse_3mf(json *pticket, std::string filename){
     
 	std::vector<std::string> ret;
@@ -146,11 +113,18 @@ std::vector<std::string> parse_3mf(json *pticket, std::string filename){
 	return ret;
 }
 
+//reads PrusaSlicer.ini and returns list of PrusaSlicer filament names in order of extruder id
+//parameter main_ini_path: absolute WSL path to PrusaSlicer.ini
 std::vector<std::string> get_extruder_matlist(std::string main_ini_path){
 	std::vector<std::string> ret;
 	inipp::Ini<char> main_ini;
 	std::ifstream is(main_ini_path);
+	if(is.fail()){
+		std::cout << "could not open " << main_ini_path << "!" << std::endl;
+		exit(1); 
+	}
 	main_ini.parse(is);
+	is.close();
 	std::string fil_key = "filament";
 	std::string filler;
 	int filct = 0;
@@ -166,6 +140,9 @@ std::vector<std::string> get_extruder_matlist(std::string main_ini_path){
 	}	
 }
 
+//reads filaments_notes string from the INI file describing the material 
+//returns vector of doubles; 0:Poisson's Ratio, 1:Material Density, 2:Young's Modulus
+//parameter notes_buf: buffer containing filament_notes field as string, comes from filament INI file
 std::vector<double> parse_fil_notes(std::string notes_buf){
 	std::vector<double> ret(3);
 	std::string delim = "\\n";
@@ -188,6 +165,9 @@ std::vector<double> parse_fil_notes(std::string notes_buf){
 	return ret;
 }
 
+//returns a list in order of extruder id containing material properties of materials assigned to each extruder
+//parameter filaments_path: absolute WSL path to filament folder within PrusaSlicer AppData folder
+//parameter extruder_matlist: string vector containing list of material names ordered by extruder id (output of get_extruder_matlist)
 std::vector<std::vector<double>> get_condensed_props(std::string filaments_path, std::vector<std::string> extruder_matlist){
 	std::string fil_key;
 	std::string notes_buf;
@@ -196,6 +176,10 @@ std::vector<std::vector<double>> get_condensed_props(std::string filaments_path,
 	for(int i=0;i<extruder_matlist.size();i++){
 		fil_key = filaments_path + "/" + extruder_matlist[i] + ".ini";
 		std::ifstream is(fil_key);
+		if(is.fail()){
+			std::cout << "could not open " << fil_key << "!" << std::endl;
+			exit(1); 
+		}
 		fil_ini.parse(is);
 		is.close();
 		inipp::get_value(fil_ini.sections[""] ,"filament_notes", notes_buf);
@@ -207,8 +191,11 @@ std::vector<std::vector<double>> get_condensed_props(std::string filaments_path,
 	
 }
 
-
-//TODO: if cant open file, error out
+//reads PrusaSlicer config files and compares to provided print ticket. If PrusaSlicer has all the right materials, open the file. Otherwise, notify user and wait for update.
+//returns integer vector of extruder ids ordered by the geometry to which they map (e.g. if first object in model file is vertebrae, first extruder id has a material similar to bone)
+//parameter pdir: absolute WSL path to PrusaSlicer AppData folder
+//parameter pticket: print ticket json extracted from 3MF package
+//parameter order: string vecor of material names ordered by presence in .model file
 std::vector<int> loop_read_config(std::string pdir, json pticket, std::vector<std::string> order){
 	std::cout << "parsing PrintTicket..." << std::endl;
 	std::vector< std::map<std::string, double> > props(order.size()*3*sizeof(double)*500*sizeof(char)); //i cry
@@ -263,120 +250,8 @@ std::vector<int> loop_read_config(std::string pdir, json pticket, std::vector<st
 	return ret;
 }
 
-// std::string convert_to_prusa_3mf(std::string tfname){
-// 	std::cout << "creating PrusaSlicer project file..." << std::endl;
-// 	std::string command = "prusa-slicer --export-3mf " + tfname + " | grep \"File exported to\"";
-// 	FILE* prusa_pipe = popen(command.c_str(), "r");
-// 	char str_buf[1024];
-// 	fgets(str_buf, 1024, prusa_pipe);
-// 	std::string outstr(str_buf);
-// 	std::string newfname = outstr.substr(outstr.find("/"), outstr.find("\n") - outstr.find("/"));
-// 	fclose(prusa_pipe);
-// 	return newfname;
-// }
-
-// void modify_prusa_proj(std::vector<int> extruder_map, std::string tfname, sigset_t* sigset, int* sig){
-// 	std::cout << "assigning materials..." << std::endl;
-// 	std::system(("unzip -qq " + tfname + " -d pFileDir").c_str());
-// 	std::system(("rm " + tfname).c_str());
-// 	std::string config_loc = "pFileDir/Metadata/Slic3r_PE_model.config";
-// 	std::string err;
-// 	XMLFile* config_fil = ::OpenXMLFile(config_loc, err);
-// 	if(!config_fil){
-// 		std::cout << err << std::endl;
-// 		exit(1);
-// 	}
-// 	XMLDocument* config_dom = ::CreateXMLFromFile(config_fil, err);
-// 	if(!config_dom){
-// 		std::cout << err << std::endl;
-// 		::DisposeXMLFile(config_fil);
-// 		exit(1);
-// 	}
-	
-// 	::SetHeader(config_dom, 1, "UTF-8", err);
-// 	XMLElement* top = ::FirstOrDefaultElement(config_dom, "config", err);
-// 	if(!top){
-// 		std::cout << err << std::endl;
-// 		::DisposeXMLObject(config_dom);
-// 		::DisposeXMLFile(config_fil);
-// 		exit(1);
-// 	}
-	
-// 	XMLElement* sib_it = top->first_node("object");
-// 	if(!sib_it){
-// 		//std::cout << "here" << std::endl;
-// 		std::cout << err << std::endl;
-// 		exit(1);
-// 	}
-// 	int fid = 0;
-// 	for(int i=0;i<extruder_map.size();i++){
-// 		XMLElement* new_mdata_element = ::CreateElement(config_dom, "metadata", "", err);
-// 		if(!new_mdata_element){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		XMLAttributte* type_attr = ::CreateAttribute(config_dom, "type", "volume", err);
-// 		if(!type_attr){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		XMLAttributte* key_attr = ::CreateAttribute(config_dom, "key", "extruder", err);
-// 		if(!key_attr){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		XMLAttributte* value_attr = ::CreateAttribute(config_dom, "value", std::to_string(extruder_map[i]), err);
-// 		if(!value_attr){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		if(!::AddAttributeToElement(new_mdata_element, type_attr, err)){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		if(!::AddAttributeToElement(new_mdata_element, key_attr, err)){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		if(!::AddAttributeToElement(new_mdata_element, value_attr, err)){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		XMLElement* vol_cont = sib_it->first_node("volume");
-// 		if(!vol_cont){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		XMLAttributte* fid_attr = vol_cont->first_attribute("firstid");
-// 		if(!::SetAttributeValue(fid_attr, std::to_string(fid), err)){
-// 			std::cout << err << std::endl;
-// 			exit(1);
-// 		}
-// 		XMLAttributte* lid_attr = vol_cont->first_attribute("lastid");
-
-// 		vol_cont->append_node(new_mdata_element);
-// 		sib_it = sib_it->next_sibling("object");
-// 		// if(!sib_it){
-// 		// 	std::cout << err << std::endl;
-// 		// 	exit(1);
-// 		// }
-// 		//append new node to sib_it
-// 		//get next sibling, put in sib it
-// 	}
-	
-// 	if(!::SaveXML(*config_dom, config_loc)){
-// 		std::cout << "could not create file" << std::endl;
-// 	}
-
-// 	std::string command = ("cd pFileDir && zip -r -q ../" + tfname.substr(tfname.rfind("/")+1) + " .");
-// 	std::system(command.c_str());
-// 	std::system("rm -r pFileDir");
-// 	std::cout << "waiting for PrusaSlicer..." << std::endl;
-// 	sigwait(sigset, sig);
-// 	//std::getchar();
-// 	std::system(("powershell.exe prusa-slicer-console.exe --single-instance " + tfname.substr(tfname.rfind("/")+1) + " > /dev/null").c_str());
-// }
-
+//returns WSL-accessible directory given a directory from Windows
+//parameter windir: directory path from windows containing quotes (usually output from 'Copy As Path' in windows)
 std::string to_wsl_dir(std::string windir){
 	windir.erase(std::remove(windir.begin(), windir.end(), '\"'), windir.end());
 	std::replace(windir.begin(), windir.end(), '\\', '/');
@@ -395,13 +270,13 @@ int main(int argc, char** argv) {
 	sigemptyset(&sigset);
 	sigaddset(&sigset, SIGUSR1);
 	sigprocmask(SIG_BLOCK, &sigset, NULL);
-	std::string tfname_win = argv[1]; //"\"C:\\Users\\Noone\\Desktop\\TestFolder\\thefile.3mf\"";
+	std::string tfname_win = argv[1]; 
 	std::string tfname = to_wsl_dir(tfname_win);
 	std::string tfdir = get_dir(tfname);
-	//tfname_win.erase(std::remove(tfname_win.begin(), tfname_win.end(), '\"'), tfname_win.end());
 
-	std::string windir = argv[2]; //"\"C:\\Users\\Noone\\AppData\\Roaming\\PrusaSlicer\"";
-	std::string pdir = to_wsl_dir(windir);//"/mnt/" + drivename + windir.substr(2); //"/home/mnoon/.config/PrusaSlicer";
+
+	std::string windir = argv[2]; 
+	std::string pdir = to_wsl_dir(windir);
 	if(!fork()){
 		FILE* cmd_pipe = popen("powershell.exe prusa-slicer-console.exe --loglevel 3 --single-instance", "r");
 		
@@ -409,7 +284,6 @@ int main(int argc, char** argv) {
 		for(int i=0;i<25;i++)fgets(buf, 1024, cmd_pipe);
 		kill(getppid(), SIGUSR1);
 		fclose(cmd_pipe);
-		//std::system("powershell.exe prusa-slicer-console.exe > /dev/null");
 		exit(0);
 	}
 
@@ -429,12 +303,6 @@ int main(int argc, char** argv) {
 		sigwait(&sigset, &sig);
 		std::string cmd = "powershell.exe prusa-slicer-console.exe --single-instance \"" + tfname_win + "\" > /dev/null";
 		std::system(cmd.c_str());
-		
-
-
-		//std::string tfname_new = convert_to_prusa_3mf(tfname);
-		
-		//modify_prusa_proj(extruder_map, tfname_new, &sigset, &sig);
 		std::cout << "done" << std::endl;
 		wait(NULL);
 		return 0;

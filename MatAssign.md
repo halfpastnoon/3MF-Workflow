@@ -10,7 +10,7 @@ In Windows Subsystem for Linux, run the following command:
  2. `[Output Filename]`: This is the final 3MF package and should be a filename ending in `.3mf`. This file will be written to the STL Folder given in the first argument.
 
 ### Material Map File
-This is a special excel spreadsheet named `matmap.xlsx` and is located in the folder pointed to by the `[STL Folder Path]`.  Starting at the second row (allowing for headers), the 'A' column stores each STL file name. Each of these files should be formatted as `Segmentation_[Material Name].stl`. Columns B, C and D represent Poisson's Ratio, Material Density and Young's Modulus, respectively. Example material map files can be found under the `Examples/` directory.
+This is a special excel spreadsheet named `matmap.xlsx` and is located in the folder pointed to by the `[STL Folder Path]`.  Starting at the second row (allowing for headers), the 'A' column stores each STL file name. Each of these names should be formatted as `C:\...\...\Input_Folder\Segmentation_[Material Name].stl` (this can be easily obtained by selecting all STL files in a folder and clicking 'Copy As Path', this can be easily pasted into an XLSX file). Columns B, C and D represent Poisson's Ratio, Material Density and Young's Modulus, respectively. Example material map files can be found under the `Examples/` directory.
 
 ### Material Properties (± 0.0001 Unit)
 1. Poisson's Ratio

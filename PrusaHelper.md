@@ -7,7 +7,9 @@ In Windows Subsystem for Linux, run the following command:
 1. `[3MF Path]`: Windows absolute path to 3MF file generated with MatAssign script, containing material properties. This can be easily obtained by right-clicking on the 3MF file and choosing 'Copy As Path'.
 2. `[PrusaSlicer Path]`: Windows absolute path to PrusaSlicer AppData folder. Usually found at: `C:\Users\[Your Username]\AppData\Roaming\PrusaSlicer`.
 
-If your PrusaSlicer installation does not have the required materials as laid out in the 3MF assigned to extruders, PrusaHelper will not open the 3MF in PrusaSlicer until this has been fixed. The properties of missing materials will be provided at the command line. 
+If your PrusaSlicer installation does not have the required materials as laid out in the 3MF assigned to extruders, PrusaHelper will not open the 3MF in PrusaSlicer until this has been fixed. The properties of missing materials will be provided at the command line.
+
+When finally opening the file in PrusaSlicer, if you get a dialog box saying: `The object is too small`, always click no. If you get a dialog box saying: `Multi-part object detected`, always click yes.
 ### Material Definition
 To define a new material with specific properties, follow these steps:
 1. Open PrusaSlicer and locate filament profile to which you would like to assign properties (this can be done under the filament settings tab).

@@ -231,3 +231,13 @@ build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/json-popu
 build/_deps/json-subbuild/json-populate-prefix/src/json-populate-stamp/verify-json-populate.cmake
 build/_deps/json-subbuild/json-populate-prefix/tmp/json-populate-cfgcmd.txt
 build/_deps/json-subbuild/json-populate-prefix/tmp/json-populate-cfgcmd.txt.in
+build/mat-assign
+build/prusa-helper
+build/.cmake/api/v1/reply/index-2023-08-04T16-00-55-0667.json
+build/CMakeFiles/mat-assign.dir/Source/MatAssign.cpp.o
+build/CMakeFiles/mat-assign.dir/Source/MatAssign.cpp.o.d
+build/CMakeFiles/prusa-helper.dir/Source/PrusaHelper.cpp.o
+build/CMakeFiles/prusa-helper.dir/Source/PrusaHelper.cpp.o.d
+build/OpenXLSX/CMakeFiles/OpenXLSX.dir/compiler_depend.internal
+build/CMakeFiles/mat-assign.dir/compiler_depend.internal
+build/CMakeFiles/prusa-helper.dir/compiler_depend.internal
