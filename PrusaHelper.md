@@ -13,15 +13,13 @@ When finally opening the file in PrusaSlicer, if you get a dialog box saying: `T
 ### Material Definition
 To define a new material with specific properties, follow these steps:
 1. Open PrusaSlicer and locate filament profile to which you would like to assign properties (this can be done under the filament settings tab).
-2. Under the notes tab, assign properties using the provided text-box in the following manner: `[Property Name]:[Value]`, pressing enter after each line. `[Property Name]` can be one of either `density`, `youngs_modulus`, or `poisson_ratio`. `Value` is accurate to 0.0001 Units. An example is provided below (not usable with clipboard).
-	>density:123.4561
- 	>
+2. Under the notes tab, assign properties using the provided text-box in the following manner: `[Property Name]:[Value]`, pressing enter after each line. `[Property Name]` can be one of either `youngs_modulus` or `poisson_ratio`. `Value` is accurate to 0.0001 Units. An example is provided below (not usable with clipboard).
  	>youngs_modulus:789.1232
 	>
 	>poisson_ratio:456.7893
-	
-3. Save the filament profile as a custom profile with a custom name (click the save icon near the profile name near the top of the window). You can verify this worked by checking the 'filament' folder for an INI file with the custom name provided to PrusaSlicer. The 'filament' folder can be found in the folder pointed to by the `[PrusaSlicer Path]` parameter.
-4. Example filament profile INI files with appropriate material definitions are provided in the `Examples/` directory. Material properties can be found under the `filament_notes` section of the INI file.
+3. Under the filament tab, material density can be provided in units of g/cm<sup>3</sup>.
+4. Save the filament profile as a custom profile with a custom name (click the save icon near the profile name near the top of the window). You can verify this worked by checking the 'filament' folder for an INI file with the custom name provided to PrusaSlicer. The 'filament' folder can be found in the folder pointed to by the `[PrusaSlicer Path]` parameter.
+5. Example filament profile INI files with appropriate material definitions are provided in the `Examples/` directory. Material properties can be found under the `filament_notes` and `filament_density` sections of the INI file.
 ## Advanced
 ### 3MF_Scripts Installation
  1. Install Windows Subsystem for Linux (WSL) on your system, preferably Ubuntu but any Linux distro should work.

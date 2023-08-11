@@ -149,14 +149,10 @@ std::vector<double> parse_fil_notes(std::string notes_buf){
 	int idx = notes_buf.rfind(delim);
 	std::vector<std::string> splitter;
 	splitter.push_back(notes_buf.substr(1, notes_buf.find(delim)-1));
-	splitter.push_back(notes_buf.substr(notes_buf.find(delim)+2, idx - notes_buf.find(delim)-2));
 	splitter.push_back(notes_buf.substr(idx+2, notes_buf.size()-1 - idx - 2));
 	for(int i=0;i<splitter.size();i++){
 		if(splitter[i].find(prat) != std::string::npos){
 			ret[0] = std::stod(splitter[i].substr(splitter[i].find(":")+1)); 
-		}
-		else if(splitter[i].find(density) != std::string::npos){
-			ret[1] = std::stod(splitter[i].substr(splitter[i].find(":")+1));
 		}
 		else if(splitter[i].find(ymod) != std::string::npos){
 			ret[2] = std::stod(splitter[i].substr(splitter[i].find(":")+1));
@@ -183,7 +179,9 @@ std::vector<std::vector<double>> get_condensed_props(std::string filaments_path,
 		fil_ini.parse(is);
 		is.close();
 		inipp::get_value(fil_ini.sections[""] ,"filament_notes", notes_buf);
-		ret.push_back(parse_fil_notes(notes_buf));
+		std::vector<double> ret_push = parse_fil_notes(notes_buf);
+		inipp::get_value(fil_ini.sections[""], "filament_density", ret_push[1]);
+		ret.push_back(ret_push);
 		notes_buf.clear();
 		fil_ini.clear();
 	}
