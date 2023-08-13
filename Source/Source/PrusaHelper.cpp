@@ -196,14 +196,17 @@ std::vector<std::vector<double>> get_condensed_props(std::string filaments_path,
 //parameter order: string vecor of material names ordered by presence in .model file
 std::vector<int> loop_read_config(std::string pdir, json pticket, std::vector<std::string> order){
 	std::cout << "parsing PrintTicket..." << std::endl;
-	std::vector< std::map<std::string, double> > props(order.size()*3*sizeof(double)*500*sizeof(char)); //i cry
+	std::vector< std::map<std::string, double> > props;
 	std::vector<int> ret;
 	std::stringstream save_stream;
 	int match_ct = 0;
 	for(int i=0;i<order.size();i++){
-		props[i][density] = pticket[materials][order[i]][density];
-		props[i][prat] = pticket[materials][order[i]][prat];
-		props[i][ymod] = pticket[materials][order[i]][ymod];
+		std::map<std::string, double> pfiller;
+		pfiller[density] = pticket[materials][order[i]][density];
+		pfiller[prat] = pticket[materials][order[i]][prat];
+		pfiller[ymod] = pticket[materials][order[i]][ymod];
+		props.push_back(pfiller);
+		pfiller.clear();
 	}
 	
 	std::string main_ini_path = pdir;
@@ -304,8 +307,6 @@ int main(int argc, char** argv) {
 		std::cout << "done" << std::endl;
 		wait(NULL);
 		return 0;
-		//Read 3MF file (pticket and order) into internal structures
-		//Read prusa files into internal structures and error check loop until printing can occur
 	}
 	catch (ELib3MFException &e) {
 		std::cout << e.what() << std::endl;

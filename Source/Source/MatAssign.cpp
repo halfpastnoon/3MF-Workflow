@@ -100,7 +100,7 @@ std::string extractMatName(std::string filename){
 //reads user material mapping and creates print ticket. Returns number of geometries to which material properties were mapped.
 //parameter stl_dir: absolute WSL path to directory containing individual STL files and matmap.xlsx
 //parameter pticket: print ticket json to be written to 3MF package
-int read_matmap(std::string stl_dir, json* pticket){
+int read_matmap(std::string stl_dir, json* pticket, int* ext_ct){
 	//open matmap.xlsx, error if doesn't exist
 	OpenXLSX::XLDocument indoc;
 	try{
@@ -112,6 +112,7 @@ int read_matmap(std::string stl_dir, json* pticket){
 	auto inwks = indoc.workbook().worksheet(indoc.workbook().sheetNames()[0]);
 	int rownum = 2;
 	std::string name = (std::string) inwks.cell("A" + std::to_string(rownum)).value();
+	std::stringstream ext_uniq;
 	while(!name.empty()){
 		name = extractMatName(to_wsl_dir(name));
 		try{
@@ -132,9 +133,15 @@ int read_matmap(std::string stl_dir, json* pticket){
 		catch(...){
 			(*pticket)[materials][name][ymod] = (int)inwks.cell("D" + std::to_string(rownum)).value();
 		}
+		std::string this_mat = ((*pticket)[materials][name]).dump();
+		if(ext_uniq.str().find(this_mat) == std::string::npos){
+			ext_uniq << this_mat;
+			*ext_ct = *ext_ct + 1;
+		}
 		rownum++;
 		name = (std::string) inwks.cell("A" + std::to_string(rownum)).value();
 	}
+	ext_uniq.str(std::string());
 	return rownum - 2;
 }
 
@@ -186,13 +193,13 @@ int combine(std::vector<std::string> plist, std::string sOutputFilename, std::st
 	PReader reader = model->QueryReader("stl");
 	PWriter writer = model->QueryWriter("3mf");
 	json pticket;
-	pticket[reqs][extruder_ct] = plist.size();
 	
-
+	int ext_ct = 0;
 	//add a base materials group for used materials
 	PBaseMaterialGroup mat_group = model->AddBaseMaterialGroup();
 	int c_res_id = 2; //iterator for the current resource id (useful when referencing read geometry)
-	int matct = read_matmap(stl_dir_path, &pticket); //read mapping of material to geometry provided by user (matmap.xlsx), also generates Model_PT.json
+	int matct = read_matmap(stl_dir_path, &pticket, &ext_ct); //read mapping of material to geometry provided by user (matmap.xlsx), also generates Model_PT.json
+	pticket[reqs][extruder_ct] = ext_ct;
 	if(!matct){ //if no map is present, notify user
 		std::cout << "no material map!" << std::endl;
 		exit(1);
