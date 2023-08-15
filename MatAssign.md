@@ -22,7 +22,9 @@ This is a special excel spreadsheet named `matmap.xlsx` and is located in the fo
 ### 3MF_Scripts Installation
  1. Install Windows Subsystem for Linux (WSL) on your system, preferably Ubuntu but any Linux distro should work.
  2. Download `3MF_Scripts.zip` from the GitHub and extract to a folder within WSL (e.g. `/home/PrusaBuild` NOT `/mnt/c/...`).
- >If using VS Code, stop here and open new folder using VS Code with C-Make extensions
+	   >If using VS Code, stop here and open new folder using VS Code with C-Make extensions
+   	>
+  	>If cmake is not installed, install it now with your package manager
  3. Set the current working directory (cwd) of the WSL shell to the `Source` folder inside the newly extracted folder.
  4. Run: `chmod +x GenerateMake.sh`
  5. Run: `./GenerateMake.sh`
